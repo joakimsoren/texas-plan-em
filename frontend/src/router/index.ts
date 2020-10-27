@@ -33,7 +33,6 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   if (!to.path.includes('planning')) {
-    console.log('here')
     next()
     return
   }
