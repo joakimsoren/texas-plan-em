@@ -3,7 +3,10 @@ import { IStory } from '@/iterations/types/story'
 import { IPlayer } from '@/planning/types/player'
 import { ActionTree } from 'vuex'
 import { RootState } from '..'
-import { mutationSetLoading } from '../planning/planning.mutations'
+import {
+  mutationSetDone,
+  mutationSetLoading,
+} from '../planning/planning.mutations'
 import {
   mutationSetPlayers,
   mutationSetActiveStory,
@@ -20,6 +23,7 @@ export const actionSetPlayerFromName = 'setPlayerFromName'
 export const actionSetEstimate = 'setEstimate'
 export const actionSetPlayers = 'setPlayers'
 export const actionSetStoryAsEstimated = 'setStoryAsEstimated'
+export const actionDone = 'done'
 
 export const actions: ActionTree<IPlanningState, RootState> = {
   async [actionLoadStories]({ commit }, id: string) {
@@ -39,7 +43,7 @@ export const actions: ActionTree<IPlanningState, RootState> = {
     commit(mutationSetPlayer, player)
   },
   async [actionSetEstimate](
-    { commit, state },
+    { state },
     {
       estimate,
       sessionId,
@@ -63,9 +67,15 @@ export const actions: ActionTree<IPlanningState, RootState> = {
   },
   [actionSetStoryAsEstimated]({ commit, state }) {
     commit(mutationSetStoryAsEstimated, state.activeStory)
+    if (state.stories.length === 0) {
+      commit(mutationSetDone, true)
+    }
     commit(mutationSetActiveStory, state.stories[0])
   },
   async [actionSetPlayers]({ commit }, players: IPlayer[]) {
     commit(mutationSetPlayers, players)
+  },
+  [actionDone]({ commit }, done: boolean) {
+    commit(mutationSetDone, false)
   },
 }

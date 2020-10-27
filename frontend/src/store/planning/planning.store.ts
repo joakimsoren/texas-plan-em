@@ -16,6 +16,7 @@ export interface IPlanningState {
   estimate: number
   code: string
   loading: boolean
+  done: boolean
 }
 
 export const state = {
@@ -28,6 +29,7 @@ export const state = {
   estimate: null,
   code: null,
   loading: false,
+  done: false,
 }
 
 const namespaced = true
