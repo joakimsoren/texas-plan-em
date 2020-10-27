@@ -18,6 +18,13 @@ html {
       height: 100%;
     }
 
+    h2 {
+      font-size: 14px;
+      font-weight: 400;
+      margin: 16px 0;
+      color: rgba(59, 59, 59, 1);
+    }
+
     input {
       padding: 0.5rem;
       font-size: 1.2rem;
