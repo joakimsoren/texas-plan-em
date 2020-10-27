@@ -87,8 +87,9 @@ export default class Planning extends Vue {
     )
   }
 
-  handleClick(number: number) {
-    this.actionSetEstimate(number, this.sessionId)
+  handleClick(estimate: number) {
+    console.log(estimate,this.sessionId );
+    this.actionSetEstimate({ estimate, sessionId: this.sessionId })
   }
 
   enterSession() {
