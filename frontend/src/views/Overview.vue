@@ -1,35 +1,39 @@
 <template>
-  <div class="demo">
-    <div class="initiate-meeting">
-      <template v-if="!session">
-        <div class="iteration-container">
-          <h2 class="iteration-title">Choose a sprint</h2>
-          <ul class="iteration-list">
-            <li
-              v-for="iteration of iterations"
-              :key="iteration.name"
-              class="iteration-list-item"
-              :class="{ selected: selectedIteration === iteration }"
-              @click="selectIteration(iteration)"
-            >
-              {{ iteration.name }}
-            </li>
-          </ul>
-        </div>
-        <button @click="createSession">
-          Create new grooming session
-        </button>
-      </template>
-      <template v-else>
-        <p>Give this link to your mates</p>
-        <p>
-          <b>{{ session.id }}</b>
-        </p>
-        <button @click="goToLink(session.id)">
-          Go to link
-        </button>
-      </template>
+  <div class="overview">
+    <h1 class="title">Texas Plan'em</h1>
+    <h2>Enter your name</h2>
+    <input
+      :value="name"
+      :class="['input-name', { completed: !!name }]"
+      @blur="handleSetName($event.target.value)"
+    />
+    <h2>Choose a sprint</h2>
+    <div class="iteration-list">
+      <Iteration
+        v-for="iteration of iterations"
+        :key="iteration.name"
+        :iteration="iteration"
+        :marked="isMarked(iteration)"
+        @select="handleSetSelectedIterationId"
+      >
+        {{ iteration.name }}
+      </Iteration>
     </div>
+    <h2>Share Id</h2>
+    <Item>
+      <div class="share-id-data">
+        {{ (session && session.id) || 'No id yet' }}
+      </div>
+      <div class="action-copy">
+        Copy
+      </div>
+    </Item>
+    <button
+      :disabled="!name || !selectedIterationId"
+      @click="handleCreateSession"
+    >
+      Start grooming session
+    </button>
   </div>
 </template>
 
@@ -39,35 +43,62 @@ import { State, Action } from 'vuex-class'
 import {
   actionLoadIterations,
   actionCreateSession,
-} from '../store/overview/overview.actions'
+  actionSetName,
+  actionSetSelectedIterationId,
+} from '@/store/overview/overview.actions'
 import { namespace as overviewNamespace } from '@/store/overview/overview.store'
-import { IIteration } from '../iterations/types/iteration'
+import { IIteration } from '@/iterations/types/iteration'
 import { ISession } from '../../../backend/src/session/types/session.type'
+import Iteration from '@/components/Iteration.vue'
+import Item from '@/components/Item.vue'
 
-@Component
+@Component({
+  components: {
+    Iteration,
+    Item,
+  },
+})
 export default class Overview extends Vue {
   @Action(actionLoadIterations, { namespace: overviewNamespace })
   actionLoadIterations: any
   @Action(actionCreateSession, { namespace: overviewNamespace })
   actionCreateSession: any
+  @Action(actionSetName, { namespace: overviewNamespace })
+  actionSetName: any
+  @Action(actionSetSelectedIterationId, { namespace: overviewNamespace })
+  actionSetSelectedIterationId: any
 
   @State('iterations', { namespace: overviewNamespace })
   iterations!: IIteration[]
   @State('session', { namespace: overviewNamespace }) session!: ISession
+  @State('selectedIterationId', { namespace: overviewNamespace })
+  selectedIterationId: number
+  @State('name', { namespace: overviewNamespace }) name: string
 
-  link = ''
-  selectedIteration: IIteration = null;
-
-  createSession() {
-    this.actionCreateSession(this.selectedIteration.id)
+  isMarked(iteration: IIteration): boolean {
+    return iteration.id === this.selectedIterationId
   }
 
-  selectIteration(iteration: IIteration) {
-    this.selectedIteration = iteration
+  handleCreateSession() {
+    this.actionCreateSession()
   }
 
-  goToLink() {
-    this.$router.push(`/planning/${this.session.id}/${this.session.iteration}`)
+  @Watch('session')
+  watchingSession(newSession: ISession) {
+    if (!newSession || !newSession.id || !newSession.iteration) {
+      return
+    }
+    this.$router.push(
+      `/planning/${this.session.id}/${this.session.iteration}/${this.name}`
+    )
+  }
+
+  handleSetName(name: string) {
+    this.actionSetName(name)
+  }
+
+  handleSetSelectedIterationId(iterationId: string) {
+    this.actionSetSelectedIterationId(iterationId)
   }
 
   async mounted() {
@@ -76,51 +107,39 @@ export default class Overview extends Vue {
 }
 </script>
 <style scoped lang="scss">
-.demo {
-  .initiate-meeting {
-    width: 500px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 1rem 0;
-    align-items: center;
-    border-radius: 5px;
-    background-color: white;
-    box-shadow: $te-box-shadow-light;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+.overview {
+  margin: auto;
+  max-width: 700px;
+  .title {
+    font-size: 48px;
+    text-align: center;
   }
-}
-
-.iteration-container {
-  width: 100%;
-
-  .iteration-title {
-    padding-left: 1rem;
-  }
-  .iteration-list {
-    max-height: 300px;
-    overflow: scroll;
+  .input-name {
+    box-shadow: 0px 0.5px 2.5px rgba(0, 0, 0, 0.25);
+    border-radius: 6px;
+    border: none;
     width: 100%;
-    padding: 0;
-    overflow: visible;
-    .iteration-list-item {
-      padding: 1rem;
-      width: 100%;
-      box-sizing: border-box;
-      list-style-type: none;
-      border-top: 1px solid transparent;
-      border-bottom: 1px solid transparent;
-      &.selected {
-        background: #f1f1f1;
-        border-color: #bebebe;
-      }
-      &:hover {
-        background: #eaeaea;
-        cursor: pointer;
-      }
+    height: 50px;
+    padding: 8px 16px;
+    border: solid 2px white;
+    &.completed {
+      border: solid 2px $te-primary;
+    }
+    &:focus {
+      outline: none;
+    }
+  }
+
+  h2 {
+    font-size: 14px;
+    font-weight: 400;
+    margin: 16px 0;
+    color: rgba(59, 59, 59, 1);
+  }
+  .iteration-container {
+    width: 100%;
+    .iteration-title {
+      padding-left: 1rem;
     }
   }
 }
