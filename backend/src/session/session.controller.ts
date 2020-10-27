@@ -49,12 +49,7 @@ export class SessionController {
     return session as ISession
   }
   @Post('disconnect')
-  async disconnectUser(@Body() { userName, sessionId }): Promise<ISession> {
-    const session = await this.redis.disconnectUser(sessionId, userName)
-
-    if (!session) {
-      throw new HttpException('User does not exist', HttpStatus.FORBIDDEN)
-    }
-    return session as ISession
+  async disconnectUser(@Body() { userName, sessionId }): Promise<void> {
+    const session = await this.redis.disconnectUser(sessionId)
   }
 }
