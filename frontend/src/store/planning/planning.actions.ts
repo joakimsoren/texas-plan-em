@@ -13,6 +13,7 @@ import {
   mutationSetStoryAsEstimated,
 } from './planning.mutations'
 import { IPlanningState } from './planning.store'
+import io from 'socket.io-client'
 
 export const actionLoadStories = 'loadStories'
 export const actionSetPlayerFromName = 'setPlayerFromName'
@@ -36,15 +37,20 @@ export const actions: ActionTree<IPlanningState, RootState> = {
   },
   async [actionSetEstimate](
     { commit, state },
-    { estimate, sessionId }: { estimate: number; sessionId: number }
+    { estimate, sessionId, userName }: { estimate: number; sessionId: number, userName: string }
   ) {
     try {
-      const estimatedStory: IStory = await APIService.estimateStory(
-        state.activeStory.id,
-        estimate,
-        sessionId
+      const socket = io('http://localhost:3001')
+      socket.emit(
+        'vote',
+        JSON.stringify({ sessionId: sessionId, userName: userName, estimation: estimate, storyId: state.activeStory.id  })
       )
-      commit(mutationSetStoryAsEstimated, estimatedStory)
+      // const estimatedStory: IStory = await APIService.estimateStory(
+      //   state.activeStory.id,
+      //   estimate,
+      //   sessionId
+      // )
+      commit(mutationSetStoryAsEstimated, state.activeStory)
       commit(mutationSetActiveStory, state.stories[0])
     } catch (error) {
       console.error('Could not estimate story', error)

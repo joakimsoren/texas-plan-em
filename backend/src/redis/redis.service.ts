@@ -3,13 +3,18 @@ import * as Redis from 'ioredis'
 import { ISession } from '../session/types/session.type'
 import { IVote } from '../session/types/vote.type'
 import { IUser } from '../session/types/user.type'
+import { getMedian } from 'src/stories/stories.helper'
+import { ClubhouseService } from 'src/clubhouse/clubhouse.service'
+import { Socket } from 'dgram'
 
 @Injectable()
 export class RedisService {
   private readonly redis: Redis.Redis
+  private readonly clubhouse: ClubhouseService
 
   constructor() {
     this.redis = new Redis({ host: 'redis' })
+    this.clubhouse = new ClubhouseService()
   }
 
   public async setSession(session: ISession): Promise<void> {
@@ -28,7 +33,9 @@ export class RedisService {
   public async setVote(
     sessionId: number,
     userName: string,
-    estimate: number
+    estimate: number,
+    storyId: number,
+    socket,
   ): Promise<ISession> {
     const session: ISession = await this.getSession(sessionId)
     const votes: IVote[] = session.votes.filter(
@@ -39,7 +46,27 @@ export class RedisService {
       votes: [...votes, { user: userName, estimate }],
     }
     await this.setSession(payload)
+    this.checkVotingDone(sessionId, storyId, socket)
     return payload
+  }
+
+  private async checkVotingDone(sessionId: number, storyId: number, socket: Socket) {
+    const {users, votes}: ISession = await this.getSession(sessionId)
+    if(users.length > votes.length) {
+      console.log('users left')
+      return
+    }
+
+    if(users.length === votes.length) {
+      const median: number = getMedian(votes.map(vote => vote.estimate))
+      console.log('median', median)
+      await this.clubhouse.udpateEstimate(
+        storyId,
+        median
+      )
+      socket.emit('estimationDone', {estimate: median, storyId})
+      await this.resetVotes(sessionId)
+    }
   }
 
   public async resetVotes(sessionId: number): Promise<ISession> {
