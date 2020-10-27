@@ -1,13 +1,17 @@
 <template>
   <div class="planning-container">
     <div class="estimate-container">
-      <Players v-if="player" :otherPlayers="otherPlayers" :player="player" />
       <div>
-        <h1>Grooming Poker</h1>
-        <Story v-if="activeStory" :story="activeStory" />
+        <h1 class="title">Grooming Poker</h1>
+        <Players :otherPlayers="otherPlayers" :player="player" />
+      </div>
+      <div>
+        <!-- <div class="success-modal"></div> -->
+        <Animation v-if="loading" class="loader" name="loader" />
+        <Story v-else-if="activeStory" :story="activeStory" />
         <h2 v-else>No story left to estimate</h2>
         <Cards v-if="activeStory" @estimate="handleEstimate" />
-      </div>
+    </div>
     </div>
   </div>
 </template>
@@ -26,14 +30,16 @@ import {
 } from '../store/planning/planning.actions'
 import { IPlayer } from '../planning/types/player'
 import io from 'socket.io-client'
-import Story from '@/components/Story.vue'
-import Players from '@/components/Players.vue'
+import Story from '@/components/Story.vue';
+import Players from '@/components/Players.vue';
+import Animation from '@/components/Animation.vue';
 
 @Component({
   components: {
     Cards,
     Story,
     Players,
+    Animation
   },
 })
 export default class Planning extends Vue {
@@ -41,6 +47,7 @@ export default class Planning extends Vue {
   @State('player', { namespace: planningNamespace }) player!: IPlayer
   @State('players', { namespace: planningNamespace }) players!: IPlayer[]
   @State('activeStory', { namespace: planningNamespace }) activeStory!: IStory
+  @State('loading', { namespace: planningNamespace }) loading!: IStory
   @State('estimatedStories', { namespace: planningNamespace })
   estimatedStories!: IStory[]
 
@@ -93,6 +100,7 @@ export default class Planning extends Vue {
           estimate: vote ? vote.estimate : 0,
         }
       })
+      console.log('setPLayers', players);
       this.actionSetPlayers(players)
     })
     this.enterSession(this.$route.params['name'])
@@ -119,8 +127,20 @@ export default class Planning extends Vue {
     }
   }
 }
+.title {
+  margin: 0;
+  margin-bottom: 36px;
+}
 .estimate-container {
   display: flex;
+}
+
+.loader {
+  width: 200px;
+  height: 200px;
+  /deep/ path {
+    fill: none;
+  } 
 }
 </style>
 <style lang="scss">
