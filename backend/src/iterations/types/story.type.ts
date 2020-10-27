@@ -3,6 +3,7 @@ import { IWorkflowState } from "./workflow-state.type";
 
 export interface IStory {
   app_url: string;
+  description: string;
   archived: boolean;
   started: boolean;
   story_links: IStoryLink[];

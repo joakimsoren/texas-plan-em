@@ -15,15 +15,15 @@ export default class Card extends Vue {
 </script>
 <style lang="scss" scoped>
 .card {
-  width: 100%;
-  height: 200px;
+  width: 171px;
+  height: 264px;
   background: white;
-  border: 0.1rem solid lightgray;
-  margin: 1rem;
   position: relative;
-  border-radius: 3px;
+  border-radius: 6px;
+  background: white;
+   box-shadow: 0px 0.5px 2.5px rgba(0, 0, 0, 0.25);
   &:hover {
-    background: lightgray;
+    background: #DBDBDB;
     transition: 0.3s background;
     cursor: pointer;
   }
@@ -32,8 +32,10 @@ export default class Card extends Vue {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: xx-large;
+    font-size: 70px;
+    font-weight: bold;
     user-select: none;
+    color: #FFA400;
   }
 }
 </style>

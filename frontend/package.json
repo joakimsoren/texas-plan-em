@@ -40,7 +40,8 @@
     "prettier": "^1.19.1",
     "sass-loader": "^7.1.0",
     "typescript": "~3.7.5",
-    "vue-template-compiler": "^2.6.11"
+    "vue-template-compiler": "^2.6.11",
+    "eslint-import-resolver-typescript": "^2.0.0"
   },
   "eslintConfig": {
     "root": true,
@@ -59,6 +60,11 @@
     },
     "rules": {
       "@typescript-eslint/interface-name-prefix": 0
+    },
+    "settings": {
+      "import/resolver": {
+        "typescript": {}
+      }
     }
   },
   "browserslist": [
