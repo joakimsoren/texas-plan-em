@@ -49,12 +49,7 @@ export class SessionController {
     return session as ISession
   }
   @Post('disconnect')
-<<<<<<< HEAD
   async disconnectUser(@Body() {sessionId }): Promise<void> {
     await this.redis.disconnectUser(sessionId)
-=======
-  async disconnectUser(@Body() { userName, sessionId }): Promise<void> {
-    const session = await this.redis.disconnectUser(sessionId)
->>>>>>> 4208d069baa5e4b8c126bf3ef0384bf2cb4b89fe
   }
 }
