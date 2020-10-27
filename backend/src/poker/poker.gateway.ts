@@ -65,7 +65,7 @@ export class PokerGateway implements OnGatewayConnection, OnGatewayDisconnect {
       estimation.userName,
       estimation.estimation,
       estimation.storyId,
-      socket,
+      this.server
     )
 
     // emit to a namespace that person x has estimated

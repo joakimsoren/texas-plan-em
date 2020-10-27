@@ -35,7 +35,7 @@ export class RedisService {
     userName: string,
     estimate: number,
     storyId: number,
-    socket,
+    websocketServer,
   ): Promise<ISession> {
     const session: ISession = await this.getSession(sessionId)
     const votes: IVote[] = session.votes.filter(
@@ -46,11 +46,11 @@ export class RedisService {
       votes: [...votes, { user: userName, estimate }],
     }
     await this.setSession(payload)
-    this.checkVotingDone(sessionId, storyId, socket)
+    this.checkVotingDone(sessionId, storyId, websocketServer)
     return payload
   }
 
-  private async checkVotingDone(sessionId: number, storyId: number, socket: Socket) {
+  private async checkVotingDone(sessionId: number, storyId: number, websocketServer) {
     const {users, votes}: ISession = await this.getSession(sessionId)
     if(users.length > votes.length) {
       console.log('users left')
@@ -64,7 +64,7 @@ export class RedisService {
         storyId,
         median
       )
-      socket.emit('estimationDone', {estimate: median, storyId})
+      websocketServer.emit('estimationDone', {estimate: median, storyId})
       await this.resetVotes(sessionId)
     }
   }
