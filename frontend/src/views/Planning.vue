@@ -8,6 +8,7 @@
     <div v-else>
       <div class="story-container" v-if="activeStory">
         <h2 class="title">{{ activeStory.name }}</h2>
+        <p class="description" v-html="description" />
       </div>
       <h2 v-else>No story left to estimate</h2>
       <div class="players-container">
@@ -49,6 +50,7 @@ import {
 } from '../store/planning/planning.actions'
 import { IPlayer } from '../planning/types/player'
 import io from 'socket.io-client'
+import MarkdownIt from 'markdown-it';
 
 @Component({
   components: {
@@ -77,6 +79,7 @@ export default class Planning extends Vue {
   sessionId = ''
   iterationId = ''
   socket = io('http://localhost:3001')
+  md = new MarkdownIt();
 
   get otherPlayers(): IPlayer[] {
     if (!this.players.length) {
@@ -98,6 +101,10 @@ export default class Planning extends Vue {
       'join',
       JSON.stringify({ userName: this.name, sessionId: this.sessionId })
     )
+  }
+  
+  get description() {
+    return this.md.render(this.activeStory.description);
   }
 
   async mounted() {
@@ -181,5 +188,12 @@ export default class Planning extends Vue {
       margin: 1rem 0;
     }
   }
+}
+
+.story-container {
+  text-align: left;
+  width: 50%;
+  margin-left: auto;
+  margin-right: auto;
 }
 </style>

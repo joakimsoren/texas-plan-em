@@ -29,7 +29,7 @@ export class ClubhouseService {
     id: number,
     states: IWorkflowState[]
   ): Promise<IStory[]> {
-    const { data } = await this.get(`iterations/${id}/stories`)
+    const { data } = await this.get(`iterations/${id}/stories`, {includes_description: true})
     return data.map((story: IStory) => ({
       ...story,
       state: states.find(
@@ -80,7 +80,9 @@ export class ClubhouseService {
     return data
   }
 
-  private async get(endpoint: string): Promise<AxiosResponse> {
-    return axios.get(`${this.baseUrl}/${endpoint}?token=${this.token}`)
+  private async get(endpoint: string, params?): Promise<AxiosResponse> {
+    return axios.get(`${this.baseUrl}/${endpoint}?token=${this.token}`, {
+      params
+    })
   }
 }

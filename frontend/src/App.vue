@@ -10,7 +10,7 @@ html {
   background-color: $te-white-dark;
   body {
     height: 100%;
-    font-family: 'Bellota Text', cursive;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 
     #app {
       height: 100%;
