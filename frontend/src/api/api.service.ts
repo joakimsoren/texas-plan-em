@@ -8,7 +8,6 @@ const connectionString = 'http://localhost:3000'
 export class APIService {
   static async loadIterations(): Promise<IIteration[]> {
     const { data } = await this.get('iterations')
-    console.log(data)
     return data
   }
 

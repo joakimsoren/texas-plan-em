@@ -4,13 +4,13 @@
   </div>
 </template>
 <script lang="ts">
-import Vue from "vue";
-import { Component, Prop } from "vue-property-decorator";
-import WebSocket from 'ws';
+import Vue from 'vue'
+import { Component, Prop } from 'vue-property-decorator'
+import WebSocket from 'ws'
 
 @Component
 export default class Card extends Vue {
-  @Prop() value!: number;
+  @Prop() value!: number
 }
 </script>
 <style lang="scss" scoped>

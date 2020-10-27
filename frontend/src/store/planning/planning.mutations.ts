@@ -30,6 +30,6 @@ export const mutations: MutationTree<IPlanningState> = {
     state.estimatedStories = [...state.estimatedStories, story]
   },
   [mutationSetPlayers](state: IPlanningState, players: IPlayer[]) {
-    state.players = players;
+    state.players = players
   },
 }

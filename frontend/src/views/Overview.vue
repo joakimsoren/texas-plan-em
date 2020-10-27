@@ -34,44 +34,44 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch } from "vue-property-decorator";
-import { State, Action } from "vuex-class";
+import { Component, Vue, Watch } from 'vue-property-decorator'
+import { State, Action } from 'vuex-class'
 import {
   actionLoadIterations,
-  actionCreateSession
-} from "../store/overview/overview.actions";
-import { namespace as overviewNamespace } from "@/store/overview/overview.store";
-import { IIteration } from "../iterations/types/iteration";
-import { ISession } from "../../../backend/src/session/types/session.type";
+  actionCreateSession,
+} from '../store/overview/overview.actions'
+import { namespace as overviewNamespace } from '@/store/overview/overview.store'
+import { IIteration } from '../iterations/types/iteration'
+import { ISession } from '../../../backend/src/session/types/session.type'
 
 @Component
 export default class Overview extends Vue {
   @Action(actionLoadIterations, { namespace: overviewNamespace })
-  actionLoadIterations: any;
+  actionLoadIterations: any
   @Action(actionCreateSession, { namespace: overviewNamespace })
-  actionCreateSession: any;
+  actionCreateSession: any
 
-  @State("iterations", { namespace: overviewNamespace })
-  iterations!: IIteration[];
-  @State("session", { namespace: overviewNamespace }) session!: ISession;
+  @State('iterations', { namespace: overviewNamespace })
+  iterations!: IIteration[]
+  @State('session', { namespace: overviewNamespace }) session!: ISession
 
-  link = "";
+  link = ''
   selectedIteration: IIteration = null;
 
   createSession() {
-    this.actionCreateSession(this.selectedIteration.id);
+    this.actionCreateSession(this.selectedIteration.id)
   }
 
-  selectIteration(iteration) {
-    this.selectedIteration = iteration;
+  selectIteration(iteration: IIteration) {
+    this.selectedIteration = iteration
   }
 
   goToLink() {
-    this.$router.push(`/planning/${this.session.id}/${this.session.iteration}`);
+    this.$router.push(`/planning/${this.session.id}/${this.session.iteration}`)
   }
 
   async mounted() {
-    await this.actionLoadIterations();
+    await this.actionLoadIterations()
   }
 }
 </script>

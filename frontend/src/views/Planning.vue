@@ -69,17 +69,18 @@ export default class Planning extends Vue {
   actionSetPlayerFromName: any
   @Action(actionSetEstimate, { namespace: planningNamespace })
   actionSetEstimate: any
-  @Action(actionSetPlayers, { namespace: planningNamespace }) actionSetPlayers: any;
+  @Action(actionSetPlayers, { namespace: planningNamespace })
+  actionSetPlayers: any
 
-  planningScale = [1, 2, 4, 8];
-  name = '';
-  sessionId: string;
-  iterationId: string;
-  socket = io('http://localhost:3001');
+  planningScale = [1, 2, 4, 8]
+  name = ''
+  sessionId = ''
+  iterationId = ''
+  socket = io('http://localhost:3001')
 
   get otherPlayers(): IPlayer[] {
     if (!this.players.length) {
-      return [];
+      return []
     }
     return this.players.filter(
       (player: IPlayer) => player.name !== this.player.name
@@ -92,27 +93,30 @@ export default class Planning extends Vue {
 
   enterSession() {
     this.actionSetPlayerFromName(this.name)
-    this.socket.emit('join', JSON.stringify({ userName: this.name, sessionId: this.sessionId }));
+    this.socket.emit(
+      'join',
+      JSON.stringify({ userName: this.name, sessionId: this.sessionId })
+    )
   }
 
   async mounted() {
-    this.sessionId = this.$route.params['sessionId'];
-    this.iterationId = this.$route.params['iterationId'];
-    await this.actionLoadStories(this.iterationId);
+    this.sessionId = this.$route.params['sessionId']
+    this.iterationId = this.$route.params['iterationId']
+    await this.actionLoadStories(this.iterationId)
 
-   this.socket.on('UserConnected', (data) => {
-     if (data.error) {
-       return console.error(data.error);
-     }
-     const players = data.session.users.map(user => {
-      const vote = data.session.votes.find(vote => vote.user === user);
-       return {
-         name: user.userName,
-         estimate:  vote ? vote.estimate : 0,
-       } 
-     });
-     this.actionSetPlayers(players);
-   });
+    this.socket.on('UserConnected', (data: any) => {
+      if (data.error) {
+        return console.error(data.error)
+      }
+      const players = data.session.users.map((user: any) => {
+        const vote = data.session.votes.find((vote: any) => vote.user === user)
+        return {
+          name: user.userName,
+          estimate: vote ? vote.estimate : 0,
+        }
+      })
+      this.actionSetPlayers(players)
+    })
   }
 }
 </script>

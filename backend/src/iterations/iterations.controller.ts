@@ -10,6 +10,7 @@ export class IterationsController {
 
   @Get()
   public async getIterations(): Promise<IIteration[]> {
+    console.log('here');
     const iterations: IIteration[] = await this.clubhouse.getIterations();
     return this.clubhouse.filterIterations(iterations);
   }

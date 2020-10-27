@@ -10,19 +10,18 @@ html {
   background-color: $te-white-dark;
   body {
     height: 100%;
-    font-family: "Bellota Text", cursive;
+    font-family: 'Bellota Text', cursive;
 
     #app {
       height: 100%;
     }
-    
-    input { 
+
+    input {
       padding: 0.5rem;
       font-size: 1.2rem;
       border-radius: 3px;
       outline: none;
       border: 1px solid #eaeaea;
-
     }
 
     button {

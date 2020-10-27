@@ -1,4 +1,4 @@
 export interface IPlayer {
-  name: string;
-  estimate: number;
+  name: string
+  estimate: number
 }
