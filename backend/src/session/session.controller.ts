@@ -35,8 +35,8 @@ export class SessionController {
   }
 
   @Get(':id')
-  async getSession(@Param('id') id: number): Promise<ISession> {
-    return this.redis.getSession(id)
+  async getSession(@Param('sessionId') sessionId: number): Promise<ISession> {
+    return this.redis.getSession(sessionId)
   }
 
   @Post('connect')

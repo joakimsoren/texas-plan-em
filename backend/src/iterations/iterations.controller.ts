@@ -22,7 +22,6 @@ export class IterationsController {
       id,
       workflowStates
     );
-    console.log(stories);
     return this.clubhouse.filterStories(stories);
   }
 }

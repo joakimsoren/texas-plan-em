@@ -63,7 +63,9 @@ export class PokerGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const session: ISession = await this.redis.setVote(
       estimation.sessionId,
       estimation.userName,
-      estimation.estimation
+      estimation.estimation,
+      estimation.storyId,
+      socket,
     )
 
     // emit to a namespace that person x has estimated
