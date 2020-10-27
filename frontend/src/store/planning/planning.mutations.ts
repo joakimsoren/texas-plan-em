@@ -9,6 +9,7 @@ export const mutationSetPlayer = 'setPlayer'
 export const mutationSetActiveStory = 'setActiveStory'
 export const mutationSetStoryAsEstimated = 'setStoryAsEstimated'
 export const mutationSetPlayers = 'setPlayers'
+export const mutationSetLoading = 'setLoading'
 
 export const mutations: MutationTree<IPlanningState> = {
   [mutationSetStories](state: IPlanningState, stories: IStory[]) {
@@ -31,5 +32,8 @@ export const mutations: MutationTree<IPlanningState> = {
   },
   [mutationSetPlayers](state: IPlanningState, players: IPlayer[]) {
     state.players = players
+  },
+  [mutationSetLoading](state: IPlanningState, loading: boolean) {
+    state.loading = loading;
   },
 }

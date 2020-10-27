@@ -3,7 +3,7 @@ import { IStory } from '@/iterations/types/story'
 import { IPlayer } from '@/planning/types/player'
 import { ActionTree } from 'vuex'
 import { RootState } from '..'
-import {} from '../planning/planning.mutations'
+import { mutationSetLoading } from '../planning/planning.mutations'
 import {
   mutationSetPlayers,
   mutationSetActiveStory,
@@ -22,6 +22,7 @@ export const actionSetPlayers = 'setPlayers'
 export const actions: ActionTree<IPlanningState, RootState> = {
   async [actionLoadStories]({ commit }, id: string) {
     commit(mutationSetCode, id)
+    commit(mutationSetLoading, true)
     try {
       const stories: IStory[] = await APIService.loadStories(id)
       commit(mutationSetStories, stories)
@@ -29,6 +30,7 @@ export const actions: ActionTree<IPlanningState, RootState> = {
     } catch (error) {
       console.error('Could not load stories', error)
     }
+    commit(mutationSetLoading, false)
   },
   [actionSetPlayerFromName]({ commit }, name: string) {
     const player: IPlayer = { name: name, estimate: 0 }

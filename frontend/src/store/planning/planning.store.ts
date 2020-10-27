@@ -15,6 +15,7 @@ export interface IPlanningState {
   iteration: IIteration
   estimate: number
   code: string
+  loading: boolean
 }
 
 export const state = {
@@ -26,6 +27,7 @@ export const state = {
   iteration: null,
   estimate: null,
   code: null,
+  loading: false,
 }
 
 const namespaced = true

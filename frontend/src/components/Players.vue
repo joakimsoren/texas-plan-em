@@ -50,7 +50,6 @@ export default class Story extends Vue {
 
 <style lang="scss">
   .players-container {
-    margin-top: 82px;
     width: 400px;
     margin-right: 24px;
     .player {
