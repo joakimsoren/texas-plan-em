@@ -6,11 +6,10 @@
         <Players :otherPlayers="otherPlayers" :player="player" />
       </div>
       <div>
-        <!-- <div class="success-modal"></div> -->
         <Animation v-if="loading" class="loader" name="loader" />
         <Story v-else-if="activeStory" :story="activeStory" />
         <h2 v-else>No story left to estimate</h2>
-        <Cards v-if="activeStory" @estimate="handleEstimate" />
+        <Cards v-if="activeStory" :finished-estimate="finishedEstimate" @estimate="handleEstimate" />
     </div>
     </div>
   </div>
@@ -63,6 +62,7 @@ export default class Planning extends Vue {
   sessionId = ''
   iterationId = ''
   socket = io('http://localhost:3001')
+  finishedEstimate = false
 
   get otherPlayers(): IPlayer[] {
     if (!this.players.length) {
@@ -71,6 +71,16 @@ export default class Planning extends Vue {
     return this.players.filter(
       (player: IPlayer) => player.name !== this.player.name
     )
+  }
+
+  animateCard(estimate) {
+    setTimeout(() => {
+      this.finishedEstimate = estimate;
+    }, 1000);
+
+     setTimeout(() => {
+       this.finishedEstimate = null;
+    }, 4000);
   }
 
   handleEstimate(estimate: number) {
@@ -104,6 +114,7 @@ export default class Planning extends Vue {
       this.actionSetPlayers(players)
     })
     this.enterSession(this.$route.params['name'])
+    this.animateCard(8);
   }
 }
 </script>
@@ -141,6 +152,24 @@ export default class Planning extends Vue {
   /deep/ path {
     fill: none;
   } 
+}
+
+.success-modal {
+  position: absolute;
+  z-index: 100;
+  left: 50%;
+  top: 40%;
+  transform: translate(-50%, -50%);
+
+  .number {
+    font-size: 200px;
+    font-weight: bold;
+    left: 50%;
+    top: 40%;
+    z-index: 1002;
+    position: absolute;
+    transform: translate(-50%, -50%);
+  }
 }
 </style>
 <style lang="scss">
