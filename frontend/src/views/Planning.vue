@@ -3,20 +3,28 @@
     <div class="estimate-container">
       <div>
         <h1 class="title">Grooming Poker</h1>
-        <Players :otherPlayers="otherPlayers" :player="player" />
+        <Players
+          v-if="players && player"
+          :otherPlayers="otherPlayers"
+          :player="player"
+        />
       </div>
       <div>
         <Animation v-if="loading" class="loader" name="loader" />
         <Story v-else-if="activeStory" :story="activeStory" />
         <h2 v-else>No story left to estimate</h2>
-        <Cards v-if="activeStory" :finished-estimate="finishedEstimate" @estimate="handleEstimate" />
-    </div>
+        <Cards
+          v-if="activeStory"
+          :finished-estimate="finishedEstimate"
+          @estimate="handleEstimate"
+        />
+      </div>
     </div>
   </div>
 </template>
 <script lang="ts">
 import Vue from 'vue'
-import { Component, Watch } from 'vue-property-decorator'
+import { Component } from 'vue-property-decorator'
 import Cards from '@/components/Cards.vue'
 import { namespace as planningNamespace } from '@/store/planning/planning.store'
 import { State, Action } from 'vuex-class'
@@ -26,19 +34,20 @@ import {
   actionSetPlayerFromName,
   actionSetEstimate,
   actionSetPlayers,
+  actionSetStoryAsEstimated,
 } from '../store/planning/planning.actions'
 import { IPlayer } from '../planning/types/player'
 import io from 'socket.io-client'
-import Story from '@/components/Story.vue';
-import Players from '@/components/Players.vue';
-import Animation from '@/components/Animation.vue';
+import Story from '@/components/Story.vue'
+import Players from '@/components/Players.vue'
+import Animation from '@/components/Animation.vue'
 
 @Component({
   components: {
     Cards,
     Story,
     Players,
-    Animation
+    Animation,
   },
 })
 export default class Planning extends Vue {
@@ -58,6 +67,8 @@ export default class Planning extends Vue {
   actionSetEstimate: any
   @Action(actionSetPlayers, { namespace: planningNamespace })
   actionSetPlayers: any
+  @Action(actionSetStoryAsEstimated, { namespace: planningNamespace })
+  actionSetStoryAsEstimated: any
 
   sessionId = ''
   iterationId = ''
@@ -74,17 +85,24 @@ export default class Planning extends Vue {
   }
 
   animateCard(estimate) {
-    setTimeout(() => {
-      this.finishedEstimate = estimate;
-    }, 1000);
+    this.finishedEstimate = estimate
 
-     setTimeout(() => {
-       this.finishedEstimate = null;
-    }, 4000);
+    setTimeout(() => {
+      this.finishedEstimate = null
+    }, 4000)
   }
 
   handleEstimate(estimate: number) {
-    this.actionSetEstimate({ estimate, sessionId: this.sessionId, userName: this.player.name })
+    this.actionSetEstimate({
+      estimate,
+      sessionId: this.sessionId,
+      userName: this.player.name,
+    })
+  }
+
+  handleEstimateComplete(estimate: number) {
+    this.animateCard(estimate)
+    setTimeout(() => this.actionSetStoryAsEstimated(), 4000)
   }
 
   enterSession(name: string) {
@@ -110,11 +128,20 @@ export default class Planning extends Vue {
           estimate: vote ? vote.estimate : 0,
         }
       })
-      console.log('setPLayers', players);
       this.actionSetPlayers(players)
     })
+    this.socket.on('estimationDone', (data: any) => {
+      console.log('I AM DONE', data)
+      if (data.error) {
+        return console.error(data.error)
+      }
+      this.handleEstimateComplete(data.estimate)
+    })
     this.enterSession(this.$route.params['name'])
-    this.animateCard(8);
+  }
+
+  beforeDestroy() {
+    this.socket.disconnect()
   }
 }
 </script>
@@ -151,7 +178,7 @@ export default class Planning extends Vue {
   height: 200px;
   /deep/ path {
     fill: none;
-  } 
+  }
 }
 
 .success-modal {

@@ -19,6 +19,7 @@ export const actionLoadStories = 'loadStories'
 export const actionSetPlayerFromName = 'setPlayerFromName'
 export const actionSetEstimate = 'setEstimate'
 export const actionSetPlayers = 'setPlayers'
+export const actionSetStoryAsEstimated = 'setStoryAsEstimated'
 
 export const actions: ActionTree<IPlanningState, RootState> = {
   async [actionLoadStories]({ commit }, id: string) {
@@ -39,24 +40,30 @@ export const actions: ActionTree<IPlanningState, RootState> = {
   },
   async [actionSetEstimate](
     { commit, state },
-    { estimate, sessionId, userName }: { estimate: number; sessionId: number, userName: string }
+    {
+      estimate,
+      sessionId,
+      userName,
+    }: { estimate: number; sessionId: number; userName: string }
   ) {
     try {
       const socket = io('http://localhost:3001')
       socket.emit(
         'vote',
-        JSON.stringify({ sessionId: sessionId, userName: userName, estimation: estimate, storyId: state.activeStory.id  })
+        JSON.stringify({
+          sessionId: sessionId,
+          userName: userName,
+          estimation: estimate,
+          storyId: state.activeStory.id,
+        })
       )
-      // const estimatedStory: IStory = await APIService.estimateStory(
-      //   state.activeStory.id,
-      //   estimate,
-      //   sessionId
-      // )
-      commit(mutationSetStoryAsEstimated, state.activeStory)
-      commit(mutationSetActiveStory, state.stories[0])
     } catch (error) {
       console.error('Could not estimate story', error)
     }
+  },
+  [actionSetStoryAsEstimated]({ commit, state }) {
+    commit(mutationSetStoryAsEstimated, state.activeStory)
+    commit(mutationSetActiveStory, state.stories[0])
   },
   async [actionSetPlayers]({ commit }, players: IPlayer[]) {
     commit(mutationSetPlayers, players)
