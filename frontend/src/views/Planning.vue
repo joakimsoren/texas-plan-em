@@ -1,12 +1,7 @@
 <template>
   <div class="planning-container">
-    <div v-if="!player" class="connect-container">
-      <h1>Your name</h1>
-      <input v-model="name" class="name-input" />
-      <button @click="enterSession">Enter grooming session</button>
-    </div>
-    <div class="estimate-container" v-else>
-      <Players :otherPlayers="otherPlayers" :player="player" />
+    <div class="estimate-container">
+      <Players v-if="player" :otherPlayers="otherPlayers" :player="player" />
       <div>
         <h1>Grooming Poker</h1>
         <Story v-if="activeStory" :story="activeStory" />
@@ -18,7 +13,7 @@
 </template>
 <script lang="ts">
 import Vue from 'vue'
-import { Component } from 'vue-property-decorator'
+import { Component, Watch } from 'vue-property-decorator'
 import Cards from '@/components/Cards.vue'
 import { namespace as planningNamespace } from '@/store/planning/planning.store'
 import { State, Action } from 'vuex-class'
@@ -31,14 +26,14 @@ import {
 } from '../store/planning/planning.actions'
 import { IPlayer } from '../planning/types/player'
 import io from 'socket.io-client'
-import Story from '@/components/Story.vue';
-import Players from '@/components/Players.vue';
+import Story from '@/components/Story.vue'
+import Players from '@/components/Players.vue'
 
 @Component({
   components: {
     Cards,
     Story,
-    Players
+    Players,
   },
 })
 export default class Planning extends Vue {
@@ -58,7 +53,6 @@ export default class Planning extends Vue {
   @Action(actionSetPlayers, { namespace: planningNamespace })
   actionSetPlayers: any
 
-  name = ''
   sessionId = ''
   iterationId = ''
   socket = io('http://localhost:3001')
@@ -76,19 +70,18 @@ export default class Planning extends Vue {
     this.actionSetEstimate({ estimate, sessionId: this.sessionId })
   }
 
-  enterSession() {
-    this.actionSetPlayerFromName(this.name)
+  enterSession(name: string) {
+    this.actionSetPlayerFromName(name)
     this.socket.emit(
       'join',
-      JSON.stringify({ userName: this.name, sessionId: this.sessionId })
+      JSON.stringify({ userName: name, sessionId: this.sessionId })
     )
   }
-  
+
   async mounted() {
     this.sessionId = this.$route.params['sessionId']
     this.iterationId = this.$route.params['iterationId']
     await this.actionLoadStories(this.iterationId)
-
     this.socket.on('UserConnected', (data: any) => {
       if (data.error) {
         return console.error(data.error)
@@ -102,6 +95,7 @@ export default class Planning extends Vue {
       })
       this.actionSetPlayers(players)
     })
+    this.enterSession(this.$route.params['name'])
   }
 }
 </script>
@@ -130,10 +124,10 @@ export default class Planning extends Vue {
 }
 </style>
 <style lang="scss">
- label {
-        font-size: 12px;
-        text-transform: uppercase;
-        display: block;
-        color: #888;
-      }
+label {
+  font-size: 12px;
+  text-transform: uppercase;
+  display: block;
+  color: #888;
+}
 </style>
