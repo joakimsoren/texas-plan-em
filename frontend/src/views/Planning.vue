@@ -5,32 +5,13 @@
       <input v-model="name" class="name-input" />
       <button @click="enterSession">Enter grooming session</button>
     </div>
-    <div v-else>
-      <div class="story-container" v-if="activeStory">
-        <h2 class="title">{{ activeStory.name }}</h2>
-        <p class="description" v-html="description" />
-      </div>
-      <h2 v-else>No story left to estimate</h2>
-      <div class="players-container">
-        <div
-          v-for="otherPlayer of otherPlayers"
-          :key="otherPlayer.name"
-          :class="['player', { done: !!otherPlayer.estimate }]"
-        >
-          {{ otherPlayer.name }}
-        </div>
-      </div>
-      <div class="player-container">
-        <h2>Player: {{ player.name }}</h2>
-        <div class="card-container">
-          <Card
-            v-for="number in planningScale"
-            :key="number"
-            @click.native="handleClick(number)"
-          >
-            {{ number }}
-          </Card>
-        </div>
+    <div class="estimate-container" v-else>
+      <Players :otherPlayers="otherPlayers" :player="player" />
+      <div>
+        <h1>Grooming Poker</h1>
+        <Story v-if="activeStory" :story="activeStory" />
+        <h2 v-else>No story left to estimate</h2>
+        <Cards v-if="activeStory" @estimate="handleEstimate" />
       </div>
     </div>
   </div>
@@ -38,7 +19,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import { Component } from 'vue-property-decorator'
-import Card from '@/components/Card.vue'
+import Cards from '@/components/Cards.vue'
 import { namespace as planningNamespace } from '@/store/planning/planning.store'
 import { State, Action } from 'vuex-class'
 import { IStory } from '@/iterations/types/story'
@@ -50,11 +31,14 @@ import {
 } from '../store/planning/planning.actions'
 import { IPlayer } from '../planning/types/player'
 import io from 'socket.io-client'
-import MarkdownIt from 'markdown-it';
+import Story from '@/components/Story.vue';
+import Players from '@/components/Players.vue';
 
 @Component({
   components: {
-    Card,
+    Cards,
+    Story,
+    Players
   },
 })
 export default class Planning extends Vue {
@@ -74,12 +58,10 @@ export default class Planning extends Vue {
   @Action(actionSetPlayers, { namespace: planningNamespace })
   actionSetPlayers: any
 
-  planningScale = [1, 2, 4, 8]
   name = ''
   sessionId = ''
   iterationId = ''
   socket = io('http://localhost:3001')
-  md = new MarkdownIt();
 
   get otherPlayers(): IPlayer[] {
     if (!this.players.length) {
@@ -90,8 +72,7 @@ export default class Planning extends Vue {
     )
   }
 
-  handleClick(estimate: number) {
-    console.log(estimate,this.sessionId );
+  handleEstimate(estimate: number) {
     this.actionSetEstimate({ estimate, sessionId: this.sessionId })
   }
 
@@ -103,10 +84,6 @@ export default class Planning extends Vue {
     )
   }
   
-  get description() {
-    return this.md.render(this.activeStory.description);
-  }
-
   async mounted() {
     this.sessionId = this.$route.params['sessionId']
     this.iterationId = this.$route.params['iterationId']
@@ -132,50 +109,9 @@ export default class Planning extends Vue {
 .planning-container {
   height: 100%;
   margin: auto;
-  text-align: center;
   position: relative;
-  .players-container {
-    position: absolute;
-    left: 0;
-    .player {
-      height: 60px;
-      width: 60px;
-      margin-top: -20px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      background-color: $te-white;
-      box-shadow: $te-box-shadow-light;
-      padding: 1rem;
-      border-radius: 50%;
-      background-color: $te-secondary;
-      border: solid 1px $te-secondary-dark;
-      transition: all 0.4s ease-in;
-      font-weight: 600;
-      &.done {
-        background-color: $te-primary;
-        border-color: $te-primary-dark;
-        color: $te-white;
-      }
-    }
-  }
-  .player-container {
-    background: #eaeaea;
-    padding: 1rem;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
-    position: absolute;
-    width: 700px;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    border: 1px solid lightgray;
-  }
-  .card-container {
-    display: flex;
-    width: 100%;
-  }
+  padding: 64px;
+
   .connect-container {
     text-align: center;
     left: 50%;
@@ -189,11 +125,15 @@ export default class Planning extends Vue {
     }
   }
 }
-
-.story-container {
-  text-align: left;
-  width: 50%;
-  margin-left: auto;
-  margin-right: auto;
+.estimate-container {
+  display: flex;
 }
+</style>
+<style lang="scss">
+ label {
+        font-size: 12px;
+        text-transform: uppercase;
+        display: block;
+        color: #888;
+      }
 </style>
