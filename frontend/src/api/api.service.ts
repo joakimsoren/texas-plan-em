@@ -11,7 +11,7 @@ export class APIService {
     return data
   }
 
-  static async createSession(id: string): Promise<ISession> {
+  static async createSession(id: number): Promise<ISession> {
     const { data } = await this.post(`session/register/${id}`, '')
     return data
   }

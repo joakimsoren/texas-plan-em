@@ -10,7 +10,9 @@ html {
   background-color: $te-white-dark;
   body {
     height: 100%;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+      Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+      'Segoe UI Symbol';
 
     #app {
       height: 100%;
@@ -41,6 +43,15 @@ html {
         border-color: $te-primary;
       }
       cursor: pointer;
+      &:disabled {
+        cursor: default;
+        opacity: 0.55;
+        transition: none;
+        &:hover {
+          background-color: $te-primary;
+          border-color: $te-box-shadow-light;
+        }
+      }
     }
   }
 }

@@ -7,12 +7,16 @@ import {
   mutationSetIterations,
   mutationSetLoaded,
   mutationSetLoading,
+  mutationSetName,
+  mutationSetSelectedIterationId,
 } from './overview.mutations'
 import { IOverviewState } from './overview.store'
 import { ISession } from '@/planning/types/session'
 
 export const actionLoadIterations = 'loadIterations'
 export const actionCreateSession = 'createSession'
+export const actionSetName = 'setName'
+export const actionSetSelectedIterationId = 'setSelectedIterationId'
 
 export const actions: ActionTree<IOverviewState, RootState> = {
   async [actionLoadIterations]({ commit }) {
@@ -28,12 +32,19 @@ export const actions: ActionTree<IOverviewState, RootState> = {
     }
     commit(mutationSetLoading, false)
   },
-  async [actionCreateSession]({ commit }, id: string) {
+  async [actionCreateSession]({ commit, state }) {
+    const iterationId: number = state.selectedIterationId
     try {
-      const session: ISession = await APIService.createSession(id)
+      const session: ISession = await APIService.createSession(iterationId)
       commit(mutationSetSession, session)
     } catch (error) {
       console.error('Could not set iteration', error)
     }
+  },
+  [actionSetName]({ commit }, name: string) {
+    commit(mutationSetName, name)
+  },
+  [actionSetSelectedIterationId]({ commit }, id: number) {
+    commit(mutationSetSelectedIterationId, id)
   },
 }
