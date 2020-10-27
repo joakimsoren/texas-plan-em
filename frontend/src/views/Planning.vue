@@ -74,7 +74,7 @@ export default class Planning extends Vue {
   }
 
   handleEstimate(estimate: number) {
-    this.actionSetEstimate({ estimate, sessionId: this.sessionId })
+    this.actionSetEstimate({ estimate, sessionId: this.sessionId, userName: this.player.name })
   }
 
   enterSession(name: string) {
