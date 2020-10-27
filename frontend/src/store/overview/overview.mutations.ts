@@ -7,6 +7,8 @@ export const mutationSetLoading = 'setLoading'
 export const mutationSetLoaded = 'setLoaded'
 export const mutationSetIterations = 'setIterations'
 export const mutationSetSession = 'setSession'
+export const mutationSetName = 'setName'
+export const mutationSetSelectedIterationId = 'setSelectedIterationId'
 
 export const mutations: MutationTree<IOverviewState> = {
   [mutationSetLoading](state: IOverviewState, loading: boolean) {
@@ -20,5 +22,11 @@ export const mutations: MutationTree<IOverviewState> = {
   },
   [mutationSetSession](state: IOverviewState, session: ISession) {
     state.session = session
+  },
+  [mutationSetName](state: IOverviewState, name: string) {
+    state.name = name
+  },
+  [mutationSetSelectedIterationId](state: IOverviewState, id: number) {
+    state.selectedIterationId = id
   },
 }
