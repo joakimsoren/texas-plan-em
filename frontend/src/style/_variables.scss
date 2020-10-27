@@ -1,0 +1,13 @@
+$te-primary: #6bb370;
+$te-primary-light: lighten($te-primary, 10%);
+$te-primary-dark: darken($te-primary, 10%);
+
+$te-secondary: #FFF58D;
+$te-secondary-dark: darken($te-secondary, 10%);
+
+$te-white: #fff;
+$te-white-dark: darken($te-white, 5%);
+$te-white-darker: darken($te-white, 10%);
+
+
+$te-box-shadow-light: 0px 2px 6px 0px #888;

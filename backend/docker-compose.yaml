@@ -1,0 +1,26 @@
+version: "3.4"
+
+x-build: &base-build
+  context: .
+  dockerfile: ./Dockerfile
+
+services:
+  nest-server:
+    build: *base-build
+    ports:
+      - 3000:3000
+      - 3001:3001
+    volumes:
+      - ./src/:/app/src
+    command: yarn start
+    links:
+      - redis
+    depends_on:
+      - redis
+    environment:
+      CLUBHOUSE_TOKEN: ${CLUBHOUSE_TOKEN}
+
+  redis:
+    image: redis:alpine
+    ports:
+      - 6379:6379
