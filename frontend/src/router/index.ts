@@ -13,7 +13,7 @@ const routes = [
     component: Overview,
   },
   {
-    path: '/planning/:sessionId/:iterationId',
+    path: '/planning/:sessionId/:iterationId/:name',
     name: 'Planning',
     component: Planning,
   },
